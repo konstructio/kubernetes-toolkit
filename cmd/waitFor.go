@@ -4,10 +4,14 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/kubefirst/kubernetes-toolkit/internal/kubernetes"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -101,6 +105,52 @@ var waitForStatefulSetCmd = &cobra.Command{
 	},
 }
 
+// waitForMinioBucketCmd represents the waitForMinioBucketCmd command
+var waitForMinioBucketCmd = &cobra.Command{
+	Use:   "minio-buckets",
+	Short: "Wait for all minio buckets to be created",
+	Long:  `Wait for all minio buckets to be created`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		minioPortForwardEndpoint := "minio.minio.svc.cluster.local:9000"
+		minioDefaultUsername := "k-ray"
+		minioDefaultPassword := "feedkraystars"
+		// Initialize minio client object.
+		minioClient, err := minio.New(minioPortForwardEndpoint, &minio.Options{
+			Creds:  credentials.NewStaticV4(minioDefaultUsername, minioDefaultPassword, ""),
+			Secure: false,
+			Region: "us-k3d-1",
+		})
+		if err != nil {
+			log.Fatal("Error creating Minio client: %s", err)
+		}
+
+		buckets := []string{"chartmuseum", "argo-artifacts", "gitlab-backup", "kubefirst-state-store", "vault-backend"}
+
+		// loop until all buckets exist
+		for {
+			allExist := true
+			for _, bucket := range buckets {
+				found, err := minioClient.BucketExists(context.Background(), bucket)
+				if err != nil {
+					log.Fatalln("Error checking bucket existence:", err)
+				}
+				if !found {
+					allExist = false
+					break
+				}
+			}
+			if allExist {
+				break
+			}
+			fmt.Println("waiting for all minio buckets to exist...")
+			time.Sleep(5 * time.Second)
+		}
+
+		fmt.Println("all minio buckets created")
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(waitForCmd)
 	waitForCmd.AddCommand(waitForDeploymentCmd)
@@ -125,4 +175,7 @@ func init() {
 		command.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
 		command.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
 	}
+
+	waitForMinioBucketCmd.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
+	waitForCmd.AddCommand(waitForMinioBucketCmd)
 }
