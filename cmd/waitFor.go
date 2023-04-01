@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/vault/api"
 	"github.com/kubefirst/kubernetes-toolkit/internal/kubernetes"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -165,6 +166,56 @@ var waitForMinioBucketCmd = &cobra.Command{
 	},
 }
 
+var waitForVaultUnsealCmd = &cobra.Command{
+	Use:   "vault-unseal",
+	Short: "Wait for vault to be unsealed",
+	Long:  `Wait for vault to be unsealed`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		for {
+			vaultRootTokenLookup, err := kubernetes.ReadSecretV2(true, "vault", "vault-unseal-secret")
+			if err != nil {
+				fmt.Println(err)
+				time.Sleep(5 * time.Second)
+			}
+			if vaultRootTokenLookup["root-token"] != "" {
+				break
+			}
+		}
+		fmt.Println("vault successfully unsealed")
+	},
+}
+
+var waitForVaultInitCompleteCmd = &cobra.Command{
+	Use:   "vault-init-complete",
+	Short: "Wait for vault to be configured with terraform",
+	Long:  `Wait for vault to be configured with terraform`,
+	Run: func(cmd *cobra.Command, args []string) {
+		cfg := api.DefaultConfig()
+		cfg.Address = "http://vault.vault.svc.cluster.local:8200"
+
+		client, err := api.NewClient(cfg)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for {
+			// Read the secret from the Vault server
+			secret, err := client.Logical().Read("secret/data/development/metaphor")
+			if err == nil {
+				// Check if the secret was found
+				if secret != nil {
+					break
+				}
+			}
+
+			fmt.Println("Waiting for vault to terraform to apply, sleeping 5 seconds")
+			time.Sleep(5 * time.Second)
+		}
+		fmt.Println("vault successfully hydrated")
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(waitForCmd)
 	waitForCmd.AddCommand(waitForDeploymentCmd)
@@ -187,6 +238,15 @@ func init() {
 		log.Fatal(err)
 	}
 	waitForDeploymentCmd.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
+
+	// waitForMinioBucketCmd
+	waitForCmd.AddCommand(waitForMinioBucketCmd)
+
+	// waitForVaultUnsealCmd
+	waitForCmd.AddCommand(waitForVaultUnsealCmd)
+
+	// waitForVaultInitCompleteCmd
+	waitForCmd.AddCommand(waitForVaultInitCompleteCmd)
 
 	// waitForPodCmd
 	waitForPodCmd.Flags().StringVar(&waitForCmdOptions.Namespace, "namespace", waitForCmdOptions.Namespace, "Namespace containing the resource (required)")
