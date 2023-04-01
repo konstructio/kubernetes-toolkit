@@ -153,9 +153,9 @@ var waitForMinioBucketCmd = &cobra.Command{
 }
 
 var waitForVaultUnsealCmd = &cobra.Command{
-	Use:   "vault-init-complete",
-	Short: "Wait for vault to be unsealed and configured with terraform",
-	Long:  `Wait for vault to be unsealed and configured with terraform`,
+	Use:   "vault-unseal",
+	Short: "Wait for vault to be unsealed",
+	Long:  `Wait for vault to be unsealed`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		for {
@@ -169,7 +169,14 @@ var waitForVaultUnsealCmd = &cobra.Command{
 			}
 		}
 		fmt.Println("vault successfully unsealed")
+	},
+}
 
+var waitForVaultInitCompleteCmd = &cobra.Command{
+	Use:   "vault-init-complete",
+	Short: "Wait for vault to be configured with terraform",
+	Long:  `Wait for vault to be configured with terraform`,
+	Run: func(cmd *cobra.Command, args []string) {
 		cfg := api.DefaultConfig()
 		cfg.Address = "http://vault.vault.svc"
 
@@ -225,4 +232,7 @@ func init() {
 
 	waitForVaultUnsealCmd.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
 	waitForCmd.AddCommand(waitForVaultUnsealCmd)
+
+	waitForVaultInitCompleteCmd.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
+	waitForCmd.AddCommand(waitForVaultInitCompleteCmd)
 }
