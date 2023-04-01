@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/vault/api"
 	"github.com/kubefirst/kubernetes-toolkit/internal/kubernetes"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -152,17 +153,13 @@ var waitForMinioBucketCmd = &cobra.Command{
 }
 
 var waitForVaultUnsealCmd = &cobra.Command{
-	Use:   "vault-unseal",
-	Short: "Wait for vault to be unsealed and the token available",
-	Long:  `Wait for vault to be unsealed and the token available`,
+	Use:   "vault-init-complete",
+	Short: "Wait for vault to be unsealed and configured with terraform",
+	Long:  `Wait for vault to be unsealed and configured with terraform`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// todo change to true before building
-		// todo change to true before building
-		// todo change to true before building
 		for {
-
-			vaultRootTokenLookup, err := kubernetes.ReadSecretV2(false, "vault", "vault-unseal-secret")
+			vaultRootTokenLookup, err := kubernetes.ReadSecretV2(true, "vault", "vault-unseal-secret")
 			if err != nil {
 				fmt.Println(err)
 				time.Sleep(5 * time.Second)
@@ -172,6 +169,29 @@ var waitForVaultUnsealCmd = &cobra.Command{
 			}
 		}
 		fmt.Println("vault successfully unsealed")
+
+		cfg := api.DefaultConfig()
+		cfg.Address = "http://vault.vault.svc"
+
+		client, err := api.NewClient(cfg)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for {
+			// Read the secret from the Vault server
+			secret, err := client.Logical().Read("secret/data/development/metaphor")
+			if err == nil {
+				// Check if the secret was found
+				if secret != nil {
+					break
+				}
+			}
+
+			fmt.Println("Waiting for vault to terraform to apply, sleeping 5 seconds")
+			time.Sleep(5 * time.Second)
+		}
+		fmt.Println("vault successfully hydrated")
 	},
 }
 
