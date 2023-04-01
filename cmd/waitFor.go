@@ -151,6 +151,30 @@ var waitForMinioBucketCmd = &cobra.Command{
 	},
 }
 
+var waitForVaultUnsealCmd = &cobra.Command{
+	Use:   "vault-unseal",
+	Short: "Wait for vault to be unsealed and the token available",
+	Long:  `Wait for vault to be unsealed and the token available`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		// todo change to true before building
+		// todo change to true before building
+		// todo change to true before building
+		for {
+
+			vaultRootTokenLookup, err := kubernetes.ReadSecretV2(false, "vault", "vault-unseal-secret")
+			if err != nil {
+				fmt.Println(err)
+				time.Sleep(5 * time.Second)
+			}
+			if vaultRootTokenLookup["root-token"] != "" {
+				break
+			}
+		}
+		fmt.Println("vault successfully unsealed")
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(waitForCmd)
 	waitForCmd.AddCommand(waitForDeploymentCmd)
@@ -178,4 +202,7 @@ func init() {
 
 	waitForMinioBucketCmd.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
 	waitForCmd.AddCommand(waitForMinioBucketCmd)
+
+	waitForVaultUnsealCmd.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
+	waitForCmd.AddCommand(waitForVaultUnsealCmd)
 }
