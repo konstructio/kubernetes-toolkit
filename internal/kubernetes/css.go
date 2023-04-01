@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	v1beta1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
+	"github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
 	log "github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -28,7 +28,7 @@ func WaitForClusterSecretStoreReady(clientset *kubernetes.Clientset, storeName s
 			Name(storeName).
 			DoRaw(context.Background())
 		if err != nil {
-			return fmt.Errorf("error retrieving ClusterSecretStore: %s", err)
+			log.Info("error getting matched secret stores, checking again")
 		}
 
 		// Unmarshal JSON API response to ClusterSecretStore object
