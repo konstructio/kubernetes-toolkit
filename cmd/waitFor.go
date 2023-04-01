@@ -240,15 +240,12 @@ func init() {
 	waitForDeploymentCmd.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
 
 	// waitForMinioBucketCmd
-	waitForMinioBucketCmd.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
 	waitForCmd.AddCommand(waitForMinioBucketCmd)
 
 	// waitForVaultUnsealCmd
-	waitForVaultUnsealCmd.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
 	waitForCmd.AddCommand(waitForVaultUnsealCmd)
 
 	// waitForVaultInitCompleteCmd
-	waitForVaultInitCompleteCmd.Flags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
 	waitForCmd.AddCommand(waitForVaultInitCompleteCmd)
 
 	// waitForPodCmd
