@@ -178,7 +178,7 @@ var waitForVaultInitCompleteCmd = &cobra.Command{
 	Long:  `Wait for vault to be configured with terraform`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := api.DefaultConfig()
-		cfg.Address = "http://vault.vault.svc"
+		cfg.Address = "http://vault.vault.svc.cluster.local:8200"
 
 		client, err := api.NewClient(cfg)
 		if err != nil {
