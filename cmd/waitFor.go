@@ -113,7 +113,7 @@ var waitForClusterSecretStoreCmd = &cobra.Command{
 	Long:  `Wait for an External Secrets Operator cluster secret store to be ready`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_, clientset, _ := kubernetes.CreateKubeConfig(waitForCmdOptions.KubeInClusterConfig)
-		err := kubernetes.WaitForClusterSecretStoreReady(&clientset, "vault-kv-secret", waitForCmdOptions.Timeout)
+		err := kubernetes.WaitForClusterSecretStoreReady(&clientset, waitForCmdOptions.Name, waitForCmdOptions.Timeout)
 		if err != nil {
 			log.Fatalf("error waiting for ClusterSecretStore object: %s", err)
 		}
@@ -216,5 +216,9 @@ func init() {
 
 	// waitForClusterSecretStoreCmd
 	waitForClusterSecretStoreCmd.Flags().StringVar(&waitForCmdOptions.Name, "name", waitForCmdOptions.Name, "Resource name (required)")
+	err = waitForClusterSecretStoreCmd.MarkFlagRequired("name")
+	if err != nil {
+		log.Fatal(err)
+	}
 	waitForClusterSecretStoreCmd.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
 }
