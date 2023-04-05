@@ -221,11 +221,11 @@ var waitForVaultInitCompleteCmd = &cobra.Command{
 // waitForCertificateCmd represents the waitForCertificate command
 var waitForCertificateCmd = &cobra.Command{
 	Use:   "certificate",
-	Short: "Wait for certificate creation",
-	Long:  `Wait for certificate creation`,
+	Short: "Wait for cert-manager Certificate creation",
+	Long:  `Wait for cert-manager Certificate creation`,
 	Run: func(cmd *cobra.Command, args []string) {
-		_, clientset, _ := kubernetes.CreateKubeConfig(waitForCmdOptions.KubeInClusterConfig)
-		err := kubernetes.WaitForCertificateReady(&clientset, waitForCmdOptions.Namespace, waitForCmdOptions.Name, waitForCmdOptions.Timeout)
+		restConfig, _, _ := kubernetes.CreateKubeConfig(waitForCmdOptions.KubeInClusterConfig)
+		err := kubernetes.WaitForCertificateReady(restConfig, waitForCmdOptions.Namespace, waitForCmdOptions.Name, waitForCmdOptions.Timeout)
 		if err != nil {
 			log.Fatalf("error waiting for Certificate object: %s", err)
 		}
