@@ -166,6 +166,7 @@ var waitForMinioBucketCmd = &cobra.Command{
 	},
 }
 
+// waitForVaultUnsealCmd represents the waitForVaultUnseal command
 var waitForVaultUnsealCmd = &cobra.Command{
 	Use:   "vault-unseal",
 	Short: "Wait for vault to be unsealed",
@@ -186,6 +187,7 @@ var waitForVaultUnsealCmd = &cobra.Command{
 	},
 }
 
+// waitForVaultInitCompleteCmd represents the waitForVaultInitComplete command
 var waitForVaultInitCompleteCmd = &cobra.Command{
 	Use:   "vault-init-complete",
 	Short: "Wait for vault to be configured with terraform",
@@ -216,17 +218,26 @@ var waitForVaultInitCompleteCmd = &cobra.Command{
 	},
 }
 
+// waitForCertificateCmd represents the waitForCertificate command
+var waitForCertificateCmd = &cobra.Command{
+	Use:   "certificate",
+	Short: "Wait for certificate creation",
+	Long:  `Wait for certificate creation`,
+	Run: func(cmd *cobra.Command, args []string) {
+		_, clientset, _ := kubernetes.CreateKubeConfig(waitForCmdOptions.KubeInClusterConfig)
+		err := kubernetes.WaitForCertificateReady(&clientset, waitForCmdOptions.Namespace, waitForCmdOptions.Name, waitForCmdOptions.Timeout)
+		if err != nil {
+			log.Fatalf("error waiting for Certificate object: %s", err)
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(waitForCmd)
-	waitForCmd.AddCommand(waitForDeploymentCmd)
-	waitForCmd.AddCommand(waitForPodCmd)
-	waitForCmd.AddCommand(waitForStatefulSetCmd)
-	waitForCmd.AddCommand(waitForClusterSecretStoreCmd)
-	waitForCmd.AddCommand(waitForMinioBucketCmd)
-
 	waitForCmd.PersistentFlags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
 
 	// waitForDeploymentCmd
+	waitForCmd.AddCommand(waitForDeploymentCmd)
 	waitForDeploymentCmd.Flags().StringVar(&waitForCmdOptions.Namespace, "namespace", waitForCmdOptions.Namespace, "Namespace containing the resource (required)")
 	err := waitForDeploymentCmd.MarkFlagRequired("namespace")
 	if err != nil {
@@ -249,6 +260,7 @@ func init() {
 	waitForCmd.AddCommand(waitForVaultInitCompleteCmd)
 
 	// waitForPodCmd
+	waitForCmd.AddCommand(waitForPodCmd)
 	waitForPodCmd.Flags().StringVar(&waitForCmdOptions.Namespace, "namespace", waitForCmdOptions.Namespace, "Namespace containing the resource (required)")
 	err = waitForPodCmd.MarkFlagRequired("namespace")
 	if err != nil {
@@ -262,6 +274,7 @@ func init() {
 	waitForPodCmd.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
 
 	// waitForStatefulSetCmd
+	waitForCmd.AddCommand(waitForStatefulSetCmd)
 	waitForStatefulSetCmd.Flags().StringVar(&waitForCmdOptions.Namespace, "namespace", waitForCmdOptions.Namespace, "Namespace containing the resource (required)")
 	err = waitForStatefulSetCmd.MarkFlagRequired("namespace")
 	if err != nil {
@@ -275,10 +288,25 @@ func init() {
 	waitForStatefulSetCmd.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
 
 	// waitForClusterSecretStoreCmd
+	waitForCmd.AddCommand(waitForClusterSecretStoreCmd)
 	waitForClusterSecretStoreCmd.Flags().StringVar(&waitForCmdOptions.Name, "name", waitForCmdOptions.Name, "Resource name (required)")
 	err = waitForClusterSecretStoreCmd.MarkFlagRequired("name")
 	if err != nil {
 		log.Fatal(err)
 	}
 	waitForClusterSecretStoreCmd.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
+
+	// waitForVaultTLSCmd
+	waitForCmd.AddCommand(waitForCertificateCmd)
+	waitForCertificateCmd.Flags().StringVar(&waitForCmdOptions.Namespace, "namespace", waitForCmdOptions.Namespace, "Namespace containing the resource (required)")
+	err = waitForCertificateCmd.MarkFlagRequired("namespace")
+	if err != nil {
+		log.Fatal(err)
+	}
+	waitForCertificateCmd.Flags().StringVar(&waitForCmdOptions.Name, "name", waitForCmdOptions.Name, "Resource name (required)")
+	err = waitForCertificateCmd.MarkFlagRequired("name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	waitForCertificateCmd.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
 }

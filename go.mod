@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/briandowns/spinner v1.22.0
+	github.com/cert-manager/cert-manager v1.11.0
 	github.com/external-secrets/external-secrets v0.8.1
 	github.com/hashicorp/vault/api v1.9.0
 	github.com/minio/minio-go/v7 v7.0.50
@@ -92,6 +93,7 @@ require (
 	k8s.io/kube-openapi v0.0.0-20230308215209-15aac26d736a // indirect
 	k8s.io/utils v0.0.0-20230313181309-38a27ef9d749 // indirect
 	sigs.k8s.io/controller-runtime v0.14.5 // indirect
+	sigs.k8s.io/gateway-api v0.6.0 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
