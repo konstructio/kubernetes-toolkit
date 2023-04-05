@@ -2,14 +2,15 @@ package kubernetes
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
-	"github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
+	esv1beta1 "github.com/external-secrets/external-secrets/apis/externalsecrets/v1beta1"
 	log "github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/rest"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -17,30 +18,62 @@ const (
 )
 
 // WaitForClusterSecretStoreReady
-func WaitForClusterSecretStoreReady(clientset *kubernetes.Clientset, storeName string, timeoutSeconds int64) error {
+func WaitForClusterSecretStoreReady(restConfig *rest.Config, storeName string, timeoutSeconds int64) error {
 	for i := int64(0); i <= timeoutSeconds; i++ {
 		log.Infof("waiting for ClusterSecretStore %s", storeName)
 
-		// Call the API to return matched ClusterSecretStore objects
-		data, err := clientset.CoreV1().RESTClient().Get().
-			AbsPath(fmt.Sprintf("/apis/%s", externalSecretsAPIVersion)).
-			Resource("clustersecretstores").
-			Name(storeName).
-			DoRaw(context.Background())
+		namespace := "external-secrets-operator"
+
+		store := &esv1beta1.ClusterSecretStore{
+			ObjectMeta: metav1.ObjectMeta{
+				Namespace: namespace,
+			},
+			Spec: esv1beta1.ClusterSecretStore{
+				Provider: &esv1beta1.SecretStoreProvider{
+					Fake: &esv1beta1.FakeProvider{},
+				},
+			},
+		}
+		provider, err := esv1beta1.GetProvider(store)
 		if err != nil {
-			log.Info("error getting matched secret stores, checking again")
+			fmt.Println("error with eso provider")
 		}
 
-		// Unmarshal JSON API response to ClusterSecretStore object
-		var resp *v1beta1.ClusterSecretStore
-		if err := json.Unmarshal(data, &resp); err != nil {
-			log.Errorf("error converting ClusterSecretStore data: %s", err)
+		kubeClient, err := client.New(restConfig, client.Options{})
+		if err != nil {
+			fmt.Println("error getting kube client")
 		}
+		
+		esClientset, err := provider.NewClient(context.Background(), store, kubeClient, "external-secrets-operator")
+		if err != nil {
+			fmt.Println("error getting eso clientset")
+		}
+
+		es, err := esClientset.
+
+		
+
+		// // Call the API to return matched ClusterSecretStore objects
+		// data, err := clientset.CoreV1().RESTClient().Get().
+		// 	AbsPath(fmt.Sprintf("/apis/%s", externalSecretsAPIVersion)).
+		// 	Resource("clustersecretstores").
+		// 	Name(storeName).
+		// 	DoRaw(context.Background())
+		// if err != nil {
+		// 	log.Info("error getting matched secret stores, checking again")
+		// 	continue
+		// }
+
+		// // Unmarshal JSON API response to ClusterSecretStore object
+		// var resp *esv1beta1.ClusterSecretStore
+		// if err := json.Unmarshal(data, &resp); err != nil {
+		// 	log.Errorf("error converting ClusterSecretStore data: %s", err)
+		// }
 
 		var lastCondition string
 		for _, condition := range resp.Status.Conditions {
 			switch {
-			case condition.Type == v1beta1.SecretStoreReady && condition.Status == v1.ConditionTrue:
+			case condition.Type == esv1beta1.SecretStoreReady && condition.Status == v1.ConditionTrue:
 				log.Infof("ClusterSecretStore validated")
 				return nil
 			default:
