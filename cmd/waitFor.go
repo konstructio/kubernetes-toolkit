@@ -296,7 +296,7 @@ func init() {
 	}
 	waitForClusterSecretStoreCmd.Flags().Int64Var(&waitForCmdOptions.Timeout, "timeout-seconds", 60, "Timeout seconds - 60 (default)")
 
-	// waitForVaultTLSCmd
+	// waitForCertificateCmd
 	waitForCmd.AddCommand(waitForCertificateCmd)
 	waitForCertificateCmd.Flags().StringVar(&waitForCmdOptions.Namespace, "namespace", waitForCmdOptions.Namespace, "Namespace containing the resource (required)")
 	err = waitForCertificateCmd.MarkFlagRequired("namespace")
