@@ -10,3 +10,10 @@ type PodSessionOptions struct {
 	Stderr     bool
 	TtyEnabled bool
 }
+
+type SyncEcrCmdOptions struct {
+	Namespace           string
+	Region              string
+	RegistryURL         string
+	KubeInClusterConfig bool
+}
