@@ -17,3 +17,9 @@ type SyncEcrCmdOptions struct {
 	RegistryURL         string
 	KubeInClusterConfig bool
 }
+
+type CreateK8sSecretCmdOptions struct {
+	Namespace           string
+	Name                string
+	KubeInClusterConfig bool
+}
