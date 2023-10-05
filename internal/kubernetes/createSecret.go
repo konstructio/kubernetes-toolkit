@@ -40,7 +40,7 @@ func CreateK8sSecret(clientset *kubernetes.Clientset, o *CreateK8sSecretCmdOptio
 			"mongodb-metrics-password":   []byte(initialPassword),
 			"mongodb-replica-set-key":    []byte(initialPassword),
 			"MONGO_INITDB_ROOT_PASSWORD": []byte(initialPassword),
-			"MONGO_INITDB_ROOT_USERNAME": []byte(initialPassword),
+			"MONGO_INITDB_ROOT_USERNAME": []byte("root"),
 			"K1_ACCESS_TOKEN":            []byte(k1AccessToken),
 		},
 	}
