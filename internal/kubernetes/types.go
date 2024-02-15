@@ -15,11 +15,11 @@ type SyncEcrCmdOptions struct {
 	Namespace           string
 	Region              string
 	RegistryURL         string
-	KubeInClusterConfig bool
+	KubeInClusterConfig string
 }
 
 type CreateK8sSecretCmdOptions struct {
 	Namespace           string
 	Name                string
-	KubeInClusterConfig bool
+	KubeInClusterConfig string
 }

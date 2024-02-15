@@ -25,7 +25,7 @@ var syncEcrTokenCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(syncEcrTokenCmd)
-	syncEcrTokenCmd.PersistentFlags().BoolVar(&syncEcrCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
+	syncEcrTokenCmd.PersistentFlags().StringVar(&syncEcrCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", "true", "Kube config type - in-cluster (default), set to false to use local")
 
 	syncEcrTokenCmd.Flags().StringVar(&syncEcrCmdOptions.Namespace, "namespace", syncEcrCmdOptions.Namespace, "Kubernetes Namespace to create/sync in (required)")
 	err := syncEcrTokenCmd.MarkFlagRequired("namespace")

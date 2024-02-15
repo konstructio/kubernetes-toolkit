@@ -16,11 +16,11 @@ import (
 var fs afero.Fs = afero.NewOsFs()
 
 // CreateKubeConfig
-func CreateKubeConfig(inCluster bool) (*rest.Config, kubernetes.Clientset, string) {
+func CreateKubeConfig(inCluster string) (*rest.Config, kubernetes.Clientset, string) {
 	// inCluster is either true or false
 	// If it's true, we pull Kubernetes API authentication from Pod SA
 	// If it's false, we use local machine settings
-	if inCluster {
+	if inCluster == "true" {
 		config, err := rest.InClusterConfig()
 		if err != nil {
 			panic(err.Error())

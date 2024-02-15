@@ -25,7 +25,7 @@ var createK8sSecret = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(createK8sSecret)
-	createK8sSecret.PersistentFlags().BoolVar(&CreateK8sSecretCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
+	createK8sSecret.PersistentFlags().StringVar(&CreateK8sSecretCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", "true", "Kube config type - in-cluster (default), set to false to use local")
 
 	createK8sSecret.Flags().StringVar(&CreateK8sSecretCmdOptions.Namespace, "namespace", CreateK8sSecretCmdOptions.Namespace, "Kubernetes Namespace to create secret in (required)")
 	err := createK8sSecret.MarkFlagRequired("namespace")
