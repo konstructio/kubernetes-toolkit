@@ -10,7 +10,7 @@ import (
 )
 
 // CreateSecretV2
-func CreateSecretV2(inCluster bool, secret *v1.Secret) error {
+func CreateSecretV2(inCluster string, secret *v1.Secret) error {
 	_, clientset, _ := CreateKubeConfig(inCluster)
 
 	_, err := clientset.CoreV1().Secrets(secret.Namespace).Create(
@@ -26,7 +26,7 @@ func CreateSecretV2(inCluster bool, secret *v1.Secret) error {
 }
 
 // ReadConfigMapV2
-func ReadConfigMapV2(inCluster bool, namespace string, configMapName string) (map[string]string, error) {
+func ReadConfigMapV2(inCluster string, namespace string, configMapName string) (map[string]string, error) {
 	_, clientset, _ := CreateKubeConfig(inCluster)
 
 	configMap, err := clientset.CoreV1().ConfigMaps(namespace).Get(context.Background(), configMapName, metav1.GetOptions{})
@@ -43,7 +43,7 @@ func ReadConfigMapV2(inCluster bool, namespace string, configMapName string) (ma
 }
 
 // ReadSecretV2
-func ReadSecretV2(inCluster bool, namespace string, secretName string) (map[string]string, error) {
+func ReadSecretV2(inCluster string, namespace string, secretName string) (map[string]string, error) {
 	_, clientset, _ := CreateKubeConfig(inCluster)
 
 	secret, err := clientset.CoreV1().Secrets(namespace).Get(context.Background(), secretName, metav1.GetOptions{})
@@ -60,7 +60,7 @@ func ReadSecretV2(inCluster bool, namespace string, secretName string) (map[stri
 }
 
 // UpdateConfigMapV2
-func UpdateConfigMapV2(inCluster bool, namespace, configMapName string, key string, value string) error {
+func UpdateConfigMapV2(inCluster string, namespace, configMapName string, key string, value string) error {
 	_, clientset, _ := CreateKubeConfig(inCluster)
 
 	configMap, err := clientset.CoreV1().ConfigMaps(namespace).Get(context.Background(), configMapName, metav1.GetOptions{})

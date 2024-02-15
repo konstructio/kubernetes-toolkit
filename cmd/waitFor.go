@@ -22,7 +22,7 @@ type WaitForCmdOptions struct {
 	Name                string
 	Label               string
 	Timeout             int64
-	KubeInClusterConfig bool
+	KubeInClusterConfig string
 }
 
 var waitForCmdOptions *WaitForCmdOptions = &WaitForCmdOptions{}
@@ -174,7 +174,7 @@ var waitForVaultUnsealCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		for {
-			vaultRootTokenLookup, err := kubernetes.ReadSecretV2(true, "vault", "vault-unseal-secret")
+			vaultRootTokenLookup, err := kubernetes.ReadSecretV2("true", "vault", "vault-unseal-secret")
 			if err != nil {
 				fmt.Println(err)
 				time.Sleep(5 * time.Second)
@@ -234,7 +234,7 @@ var waitForCertificateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(waitForCmd)
-	waitForCmd.PersistentFlags().BoolVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", true, "Kube config type - in-cluster (default), set to false to use local")
+	waitForCmd.PersistentFlags().StringVar(&waitForCmdOptions.KubeInClusterConfig, "use-kubeconfig-in-cluster", "true", "Kube config type - in-cluster (default), set to false to use local")
 
 	// waitForDeploymentCmd
 	waitForCmd.AddCommand(waitForDeploymentCmd)
