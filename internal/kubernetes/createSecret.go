@@ -28,20 +28,12 @@ func random(seq int) string {
 
 // CreateK8sSecret
 func CreateK8sSecret(clientset *kubernetes.Clientset, o *CreateK8sSecretCmdOptions) error {
-
-	initialPassword := random(12)
 	k1AccessToken := random(20)
 
 	secret := &v1.Secret{
 		ObjectMeta: metav1.ObjectMeta{Name: o.Name, Namespace: o.Namespace},
 		Data: map[string][]byte{
-			"mongodb-passwords":          []byte(initialPassword),
-			"mongodb-root-password":      []byte(initialPassword),
-			"mongodb-metrics-password":   []byte(initialPassword),
-			"mongodb-replica-set-key":    []byte(initialPassword),
-			"MONGO_INITDB_ROOT_PASSWORD": []byte(initialPassword),
-			"MONGO_INITDB_ROOT_USERNAME": []byte("root"),
-			"K1_ACCESS_TOKEN":            []byte(k1AccessToken),
+			"K1_ACCESS_TOKEN": []byte(k1AccessToken),
 		},
 	}
 
