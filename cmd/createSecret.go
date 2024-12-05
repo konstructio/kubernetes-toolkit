@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/kubefirst/kubernetes-toolkit/internal/kubernetes"
+	"github.com/konstructio/kubernetes-toolkit/internal/kubernetes"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
