@@ -1,6 +1,6 @@
 package main
 
-import "github.com/kubefirst/kubernetes-toolkit/cmd"
+import "github.com/konstructio/kubernetes-toolkit/cmd"
 
 func main() {
 	cmd.Execute()

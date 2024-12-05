@@ -1,4 +1,4 @@
-module github.com/kubefirst/kubernetes-toolkit
+module github.com/konstructio/kubernetes-toolkit
 
 go 1.20
 

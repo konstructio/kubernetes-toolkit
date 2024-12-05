@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kubefirst/kubernetes-toolkit/internal/common"
+	"github.com/konstructio/kubernetes-toolkit/internal/common"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"k8s.io/client-go/kubernetes"
