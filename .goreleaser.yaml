@@ -26,7 +26,7 @@ dockers:
     build_flag_templates:
       - "--platform=linux/amd64"
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.description={{ .ProjectName }} version {{ .Version }}. See release notes at https://github.com/patrickdappollonio/{{ .ProjectName }}/releases/tag/v{{ .RawVersion }}"
+      - "--label=org.opencontainers.image.description={{ .ProjectName }} version {{ .Version }}. See release notes at https://github.com/konstructio/{{ .ProjectName }}/releases/tag/v{{ .RawVersion }}"
       - "--label=org.opencontainers.image.url=https://github.com/konstructio/{{ .ProjectName }}"
       - "--label=org.opencontainers.image.source=https://github.com/konstructio/{{ .ProjectName }}"
       - "--label=org.opencontainers.image.version={{ .Version }}"
@@ -41,7 +41,7 @@ dockers:
     build_flag_templates:
       - "--platform=linux/arm64"
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
-      - "--label=org.opencontainers.image.description={{ .ProjectName }} version {{ .Version }}. See release notes at https://github.com/patrickdappollonio/{{ .ProjectName }}/releases/tag/v{{ .RawVersion }}"
+      - "--label=org.opencontainers.image.description={{ .ProjectName }} version {{ .Version }}. See release notes at https://github.com/konstructio/{{ .ProjectName }}/releases/tag/v{{ .RawVersion }}"
       - "--label=org.opencontainers.image.url=https://github.com/konstructio/{{ .ProjectName }}"
       - "--label=org.opencontainers.image.source=https://github.com/konstructio/{{ .ProjectName }}"
       - "--label=org.opencontainers.image.version={{ .Version }}"
